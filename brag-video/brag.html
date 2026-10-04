@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Wedding Cam Brag</title>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0a0a12; }
+  body { font-family: 'Inter', 'Emoji', sans-serif; color: #fff; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: radial-gradient(1200px 800px at 30% 20%, #1d1440 0%, #0a0a12 60%); }
+  #glow { position: absolute; width: 1400px; height: 1400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,90,170,.22), transparent 60%); filter: blur(20px); }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; opacity: 0; }
+  .kicker { font-size: 34px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: #b9a8ff; }
+  .huge { font-size: 190px; font-weight: 900; line-height: .95; letter-spacing: -.04em; text-align: center; }
+  .big { font-size: 96px; font-weight: 900; line-height: 1.02; letter-spacing: -.03em; text-align: center; }
+  .mid { font-size: 52px; font-weight: 800; letter-spacing: -.02em; text-align: center; }
+  .sub { font-size: 38px; font-weight: 400; color: #c9c4e0; text-align: center; line-height: 1.35; }
+  .gold { background: linear-gradient(90deg, #ffe27a, #f5a623, #ffe27a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .pink { background: linear-gradient(90deg, #ff6ab0, #a98bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .step { position: absolute; top: 70px; left: 90px; font-size: 30px; font-weight: 800; letter-spacing: .25em; color: #ff6ab0; }
+  .caption { position: absolute; left: 90px; width: 760px; }
+  .caption .big { text-align: left; font-size: 86px; }
+  .caption .sub { text-align: left; margin-top: 28px; }
+  .confetti { position: absolute; width: 18px; height: 30px; border-radius: 4px; }
+  /* phone */
+  .phone { position: absolute; width: 480px; height: 940px; border-radius: 70px; background: #111;
+    border: 14px solid #2a2a33; box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 2px #444 inset; overflow: hidden; }
+  .shot { position: absolute; inset: 0; background: linear-gradient(180deg, #f6d7c3 0%, #e9b7a0 55%, #3b2d4f 55%, #2b2140 100%); }
+  .face { position: absolute; left: 115px; top: 170px; width: 220px; height: 270px; border-radius: 50% 50% 46% 46%; background: #f1c19d; }
+  .hair { position: absolute; left: 100px; top: 140px; width: 250px; height: 150px; border-radius: 125px 125px 30px 30px; background: #4a2e1f; }
+  .eye { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #2b1d14; top: 290px; }
+  .smile { position: absolute; left: 185px; top: 365px; width: 80px; height: 40px; border-bottom: 8px solid #a54a3b; border-radius: 0 0 80px 80px; }
+  .body { position: absolute; left: 50px; top: 470px; width: 350px; height: 500px; border-radius: 170px 170px 0 0; background: #fff; }
+  .tie { position: absolute; left: 205px; top: 470px; width: 40px; height: 90px; background: #222; clip-path: polygon(0 0,100% 0,50% 100%); }
+  .sticker { position: absolute; font-size: 110px; line-height: 1; transform-origin: center; }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  .shutter { position: absolute; bottom: 40px; left: 50%; margin-left: -48px; width: 96px; height: 96px; border-radius: 50%; background: #fff; border: 8px solid #999; }
+  .badge { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); padding: 10px 22px; border-radius: 999px; background: rgba(0,0,0,.55); font-size: 24px; font-weight: 700; white-space: nowrap; }
+  /* code panel */
+  .panel { position: absolute; background: #12121c; border: 2px solid #2b2b40; border-radius: 28px; box-shadow: 0 30px 90px rgba(0,0,0,.5); }
+  .mono { font-family: 'JetBrains Mono', 'Emoji', monospace; }
+  .row { display: flex; justify-content: space-between; font-size: 40px; padding: 16px 0; border-bottom: 1px solid #23233a; }
+  .b64 { position: absolute; font-family: 'JetBrains Mono', 'Emoji', monospace; font-size: 26px; color: #7cf3c0; white-space: nowrap; }
+  /* chat */
+  .bubble { position: absolute; max-width: 760px; padding: 26px 36px; border-radius: 34px; font-size: 40px; font-weight: 600; line-height: 1.25; }
+  .agent { background: #2a2350; border-bottom-left-radius: 8px; }
+  .me { background: linear-gradient(90deg, #ff6ab0, #a98bff); border-bottom-right-radius: 8px; }
+  .video { position: absolute; width: 560px; height: 420px; border-radius: 30px; overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, #4b3b8f, #1a1430); border: 2px solid #3a3366; }
+  /* cards */
+  .card { position: absolute; width: 470px; padding: 40px; border-radius: 30px; background: #fff; color: #111; box-shadow: 0 30px 90px rgba(0,0,0,.5); }
+  .card h3 { font-size: 30px; letter-spacing: .1em; text-transform: uppercase; color: #777; margin-bottom: 18px; }
+  .card .amt { font-size: 76px; font-weight: 900; letter-spacing: -.03em; }
+  .chip { display: inline-block; padding: 16px 30px; margin: 10px; border-radius: 999px; font-size: 40px; font-weight: 700; background: #1a1a2b; border: 2px solid #34345a; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+  <div id="confetti"></div>
+
+  <!-- S1: We won -->
+  <div class="scene" id="s1">
+    <div class="sticker" id="trophy" style="position:relative;font-size:230px;">🏆</div>
+    <div class="huge gold" id="s1title" style="margin-top:10px">WE WON.</div>
+    <div class="mid" id="s1sub" style="margin-top:30px;color:#e9e4ff">Cursor Hackathon · June 2026</div>
+  </div>
+
+  <!-- S2: Problem -->
+  <div class="scene" id="s2">
+    <div class="kicker" id="s2k">The problem</div>
+    <div class="big" id="s2a" style="margin-top:30px">Wedding photographers shoot<br><span class="pink">thousands of photos.</span></div>
+    <div class="sub" id="s2b" style="margin-top:40px;font-size:46px">Then comes the awkward part: pricing, haggling, chasing invoices.</div>
+  </div>
+
+  <!-- S3: Snap + sticker -->
+  <div class="scene" id="s3">
+    <div class="step" id="s3step">01 · SNAP</div>
+    <div class="caption" id="s3cap" style="top:360px">
+      <div class="big">Snap it.<br><span class="pink">Sticker it.</span></div>
+      <div class="sub">Face-boxed goofy watermarks (🐱 ears, 👑, 😎), composited on-device in Expo Go. No preview theft.</div>
+    </div>
+    <div class="phone" id="phone" style="left:1180px;top:70px">
+      <div class="shot">
+        <div class="body"></div><div class="tie"></div>
+        <div class="hair"></div><div class="face"></div>
+        <div class="eye" style="left:170px"></div><div class="eye" style="left:258px"></div>
+        <div class="smile"></div>
+        <div class="sticker" id="st-ears" style="left:96px;top:60px;font-size:120px">🐱</div>
+        <div class="sticker" id="st-ears2" style="left:250px;top:60px;font-size:120px">🐱</div>
+        <div class="sticker" id="st-crown" style="left:170px;top:-10px;font-size:110px">👑</div>
+        <div class="sticker" id="st-glasses" style="left:160px;top:240px;font-size:130px">🕶️</div>
+        <div class="sticker" id="st-sparkle" style="left:350px;top:420px;font-size:80px">✨</div>
+      </div>
+      <div class="flash" id="flash"></div>
+      <div class="badge" id="sentbadge">✅ sent</div>
+      <div class="shutter" id="shutter"></div>
+    </div>
+  </div>
+
+  <!-- S4: Webhook + valuation -->
+  <div class="scene" id="s4">
+    <div class="step">02 · PRICE</div>
+    <div class="caption" style="top:330px">
+      <div class="big">FastAPI<br><span class="pink">values every shot.</span></div>
+      <div class="sub">Batch base64 upload hits <span class="mono" style="color:#7cf3c0">/webhook/capture</span>, each image priced, PDF generated.</div>
+    </div>
+    <div id="b64wrap"></div>
+    <div class="panel" id="s4panel" style="left:1020px;top:210px;width:800px;padding:44px 54px">
+      <div class="mono" style="font-size:28px;color:#7cf3c0;margin-bottom:20px">POST /webhook/capture → 200 OK</div>
+      <div class="row mono" id="r1"><span>img-1</span><span>$312.40</span></div>
+      <div class="row mono" id="r2"><span>img-2</span><span>$88.15</span></div>
+      <div class="row mono" id="r3"><span>img-3</span><span>$457.90</span></div>
+      <div class="row mono" id="r4"><span>img-4</span><span>$381.55</span></div>
+      <div class="row" id="rtot" style="border:none;font-size:56px;font-weight:900;padding-top:30px"><span>Base quote</span><span class="gold" id="totnum">$0</span></div>
+    </div>
+  </div>
+
+  <!-- S5: AI barter -->
+  <div class="scene" id="s5">
+    <div class="step">03 · BARTER</div>
+    <div class="video" id="vid" style="left:110px;top:240px">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:220px" id="agentface">🧑‍💼</div>
+      <div style="position:absolute;top:22px;left:22px;padding:8px 18px;border-radius:999px;background:#ff3b5c;font-size:22px;font-weight:800">● LIVE · AI AGENT</div>
+    </div>
+    <div class="sub" id="vidcap" style="position:absolute;left:110px;top:700px;width:560px;text-align:left;font-size:34px">A Tavus video agent, pre-briefed with the quote, haggles so you don't have to.</div>
+    <div class="bubble agent" id="c1" style="left:760px;top:200px">Base quote is $1,240 for the set. 📸</div>
+    <div class="bubble me" id="c2" style="right:110px;top:350px">Could you do $900?</div>
+    <div class="bubble agent" id="c3" style="left:760px;top:500px">Meet me at $1,050 and they're yours. 🤝</div>
+    <div class="bubble me" id="c4" style="right:110px;top:650px">Deal.</div>
+    <div class="mid" id="dealtag" style="position:absolute;left:760px;top:830px;font-size:64px"><span class="gold">Deal locked: $1,050</span></div>
+  </div>
+
+  <!-- S6: Paid -->
+  <div class="scene" id="s6">
+    <div class="step">04 · PAID</div>
+    <div class="big" id="s6t" style="position:absolute;top:150px;width:100%">Invoice out. <span class="pink">Money in.</span></div>
+    <div class="card" id="k1" style="left:150px;top:400px">
+      <h3>🧾 PDF Invoice</h3><div class="amt">$1,050.00</div>
+      <div style="font-size:28px;color:#666;margin-top:14px">Job · photo count · amount due</div>
+    </div>
+    <div class="card" id="k2" style="left:725px;top:400px;background:#635bff;color:#fff">
+      <h3 style="color:#d6d3ff">💳 Stripe link</h3><div class="amt" style="font-size:44px">buy.stripe.com/…</div>
+      <div style="font-size:28px;color:#e2e0ff;margin-top:14px">Real Payment Link, auto-created</div>
+    </div>
+    <div class="card" id="k3" style="left:1300px;top:400px;background:#25d366;color:#05301a">
+      <h3 style="color:#0b5a32">💬 Email + WhatsApp</h3><div class="amt" style="font-size:40px;line-height:1.15">"Thanks for dealing with us, no cap. 🤝"</div>
+    </div>
+  </div>
+
+  <!-- S7: Stack -->
+  <div class="scene" id="s7">
+    <div class="kicker">Shipped in one weekend with</div>
+    <div id="chips" style="margin-top:50px;max-width:1500px;text-align:center">
+      <span class="chip">⚡ Cursor</span><span class="chip">📱 Expo Go</span><span class="chip">🐍 FastAPI</span>
+      <span class="chip">🎥 Tavus</span><span class="chip">💳 Stripe</span><span class="chip">✉️ Resend</span>
+      <span class="chip">💬 Twilio</span><span class="chip">🧾 ReportLab</span>
+    </div>
+  </div>
+
+  <!-- S8: Finale -->
+  <div class="scene" id="s8">
+    <div class="sticker" id="trophy2" style="position:relative;font-size:170px">🏆</div>
+    <div class="mid" style="color:#e9e4ff;margin-top:10px" id="s8a">Cursor Hackathon Winner</div>
+    <div class="huge" id="s8b" style="margin-top:20px;font-size:150px">Wedding Cam <span style="font-size:130px">📸</span></div>
+    <div class="mid pink" id="s8c" style="margin-top:36px">Snap. Sticker. Barter. Paid.</div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a=0, b=1) => Math.min(b, Math.max(a, v));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeInOut = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+const backOut = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+const lerp = (a, b, x) => a + (b - a) * x;
+
+// scene windows [start, end]
+const S = { s1:[0,3.4], s2:[3.4,6.9], s3:[6.9,12.2], s4:[12.2,17.0], s5:[17.0,22.6], s6:[22.6,26.8], s7:[26.8,29.4], s8:[29.4,34] };
+const DURATION = 34;
+const FADE = .35;
+
+function sceneAlpha(t, [a, b]) {
+  if (t < a || t > b) return 0;
+  const inA = a === 0 ? 1 : prog(t, a, a + FADE);
+  const outA = b === DURATION ? 1 : 1 - prog(t, b - FADE, b);
+  return Math.min(inA, outA);
+}
+
+// Pop-in helper: element appears at time `at`, scale overshoot + fade
+function pop(el, t, at, dur=.45, fromY=40) {
+  const p = prog(t, at, at + dur);
+  el.style.opacity = clamp(p * 2);
+  el.style.transform = `translateY(${(1 - easeOut(p)) * fromY}px) scale(${lerp(.6, 1, backOut(p))})`;
+}
+function rise(el, t, at, dur=.6, fromY=60) {
+  const p = easeOut(prog(t, at, at + dur));
+  el.style.opacity = p;
+  el.style.transform = `translateY(${(1 - p) * fromY}px)`;
+}
+
+// Deterministic confetti
+const CONF_COLORS = ['#ffe27a','#ff6ab0','#a98bff','#7cf3c0','#f5a623','#5ac8ff'];
+const confetti = [];
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+for (let i = 0; i < 140; i++) {
+  const d = document.createElement('div');
+  d.className = 'confetti';
+  d.style.background = CONF_COLORS[i % CONF_COLORS.length];
+  $('confetti').appendChild(d);
+  confetti.push({ el: d, x: rnd() * 1920, vx: (rnd() - .5) * 500, vy: -900 - rnd() * 900, rot: rnd() * 360, vr: (rnd() - .5) * 900, delay: rnd() * .3, burst: i < 70 ? 0 : 1 });
+}
+const BURSTS = [0.55, 29.7];
+function renderConfetti(t) {
+  for (const c of confetti) {
+    const bt = BURSTS[c.burst] + c.delay;
+    const dt = t - bt;
+    if (dt < 0 || dt > 4) { c.el.style.opacity = 0; continue; }
+    const x = 960 + (c.x - 960) * .25 + c.vx * dt;
+    const y = 1100 + c.vy * dt + 900 * dt * dt;
+    c.el.style.opacity = dt > 3.2 ? 1 - (dt - 3.2) / .8 : 1;
+    c.el.style.transform = `translate(${x}px, ${y}px) rotate(${c.rot + c.vr * dt}deg)`;
+  }
+}
+
+// Base64 stream particles for scene 4
+const B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg';
+const streams = [];
+for (let i = 0; i < 14; i++) {
+  const d = document.createElement('div');
+  d.className = 'b64';
+  const off = Math.floor(rnd() * 60);
+  d.textContent = B64.slice(off, off + 18 + Math.floor(rnd() * 14));
+  $('b64wrap').appendChild(d);
+  streams.push({ el: d, y: 250 + rnd() * 650, delay: rnd() * 2.2, speed: 900 + rnd() * 700 });
+}
+
+window.render = function (t) {
+  // background glow drift
+  $('glow').style.transform = `translate(${300 + Math.sin(t * .4) * 250}px, ${-200 + Math.cos(t * .3) * 150}px)`;
+  for (const k in S) $(k).style.opacity = sceneAlpha(t, S[k]);
+  renderConfetti(t);
+
+  // S1
+  {
+    const p = prog(t, 0, .7);
+    $('trophy').style.transform = `translateY(${(1 - backOut(p)) * -500}px) rotate(${Math.sin(t * 3) * 6}deg) scale(${1 + Math.sin(t * 5) * .03})`;
+    $('trophy').style.opacity = clamp(p * 3);
+    pop($('s1title'), t, .45, .5, 60);
+    rise($('s1sub'), t, 1.0);
+    const zoom = 1 + prog(t, 0, 3.4) * .06;
+    $('s1').style.transform = `scale(${zoom})`;
+  }
+  // S2
+  {
+    const a = S.s2[0];
+    rise($('s2k'), t, a + .1);
+    rise($('s2a'), t, a + .3);
+    rise($('s2b'), t, a + 1.3);
+  }
+  // S3
+  {
+    const a = S.s3[0];
+    const pp = easeOut(prog(t, a, a + .7));
+    $('phone').style.transform = `translateX(${(1 - pp) * 700}px) rotate(${(1 - pp) * 8}deg)`;
+    rise($('s3cap'), t, a + .2);
+    rise($('s3step'), t, a);
+    const shot = a + 1.3;
+    const sp = prog(t, shot - .15, shot);
+    $('shutter').style.transform = `scale(${1 - Math.sin(sp * Math.PI) * .2})`;
+    const fp = t >= shot ? 1 - prog(t, shot, shot + .4) : 0;
+    $('flash').style.opacity = fp;
+    const ids = ['st-ears', 'st-ears2', 'st-crown', 'st-glasses', 'st-sparkle'];
+    ids.forEach((id, i) => {
+      const el = $(id);
+      const p = prog(t, shot + .35 + i * .18, shot + .75 + i * .18);
+      el.style.opacity = p > 0 ? 1 : 0;
+      el.style.transform = `scale(${backOut(p) * 1}) rotate(${(1 - p) * -40 + (i === 1 ? 15 : i === 0 ? -15 : 0)}deg)`;
+    });
+    pop($('sentbadge'), t, shot + 2.0, .4, -20);
+  }
+  // S4
+  {
+    const a = S.s4[0];
+    const pp = easeOut(prog(t, a + .1, a + .7));
+    $('s4panel').style.opacity = pp;
+    $('s4panel').style.transform = `translateY(${(1 - pp) * 80}px)`;
+    streams.forEach(s => {
+      const dt = t - a - .2 - s.delay;
+      const x = -500 + dt * s.speed;
+      s.el.style.opacity = dt < 0 || x > 1100 ? 0 : clamp(1 - x / 1100) * .8;
+      s.el.style.transform = `translate(${x}px, ${s.y}px)`;
+    });
+    ['r1', 'r2', 'r3', 'r4'].forEach((id, i) => rise($(id), t, a + .8 + i * .35, .4, 30));
+    rise($('rtot'), t, a + 2.3, .4, 30);
+    const tot = 1240 * easeOut(prog(t, a + 2.3, a + 3.4));
+    $('totnum').textContent = '$' + Math.round(tot).toLocaleString('en-US');
+  }
+  // S5
+  {
+    const a = S.s5[0];
+    pop($('vid'), t, a + .1, .5, 40);
+    rise($('vidcap'), t, a + .5);
+    $('agentface').style.transform = `translateY(${Math.sin(t * 6) * 6}px) rotate(${Math.sin(t * 2.3) * 3}deg)`;
+    ['c1', 'c2', 'c3', 'c4'].forEach((id, i) => pop($(id), t, a + .7 + i * .9, .4, 30));
+    pop($('dealtag'), t, a + 4.4, .5, 20);
+  }
+  // S6
+  {
+    const a = S.s6[0];
+    rise($('s6t'), t, a + .1);
+    ['k1', 'k2', 'k3'].forEach((id, i) => {
+      const el = $(id);
+      const p = prog(t, a + .5 + i * .35, a + 1.0 + i * .35);
+      el.style.opacity = clamp(p * 2);
+      el.style.transform = `translateY(${(1 - backOut(p)) * 160}px) rotate(${(1 - p) * (i - 1) * 10 + (i - 1) * 2}deg)`;
+    });
+  }
+  // S7
+  {
+    const a = S.s7[0];
+    [...document.querySelectorAll('#chips .chip')].forEach((el, i) => pop(el, t, a + .2 + i * .12, .35, 30));
+  }
+  // S8
+  {
+    const a = S.s8[0];
+    const p = prog(t, a, a + .6);
+    $('trophy2').style.transform = `scale(${backOut(p)}) rotate(${Math.sin(t * 3) * 6}deg)`;
+    $('trophy2').style.opacity = clamp(p * 3);
+    rise($('s8a'), t, a + .35);
+    pop($('s8b'), t, a + .6, .55, 50);
+    rise($('s8c'), t, a + 1.3);
+  }
+};
+window.DURATION = DURATION;
+render(0);
+</script>
+</body>
+</html>
